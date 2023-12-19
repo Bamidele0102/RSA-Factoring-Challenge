@@ -1,0 +1,62 @@
+import random
+import math
+
+
+def generate_primes(limit):
+    primes = [2]
+    for num in range(3, limit + 1, 2):
+        if all(num % i != 0 for i in range(2, int(math.sqrt(num)) + 1)):
+            primes.append(num)
+    return primes
+
+
+def generate_p_and_q(limit=100):
+    primes = generate_primes(limit)
+    p = random.choice(primes)
+    primes.remove(p)
+    q = random.choice(primes)
+    return p, q
+
+
+def calculate_n_and_phi(p, q):
+    n = p * q
+    phi = (p - 1) * (q - 1)
+    return n, phi
+
+
+def generate_e(phi):
+    possible_e_values = [i for i in range(2, phi) if math.gcd(i, phi) == 1]
+    return random.choice(possible_e_values)
+
+
+def generate_d(e, phi):
+    return pow(e, -1, phi)
+
+
+def encrypt(msg, e, n):
+    return pow(msg, e, n)
+
+
+def decrypt(c, d, n):
+    return pow(c, d, n)
+
+
+if __name__ == "__main__":
+    p, q = generate_p_and_q()
+    n, phi = calculate_n_and_phi(p, q)
+    e = generate_e(phi)
+    d = generate_d(e, phi)
+
+    print(f'[+] p = {p} and q = {q}')
+    print(f'[+] n = {n} and euler totient = {phi}')
+    print(f'[+] e = {e}')
+    print(f'[+] d = {d}')
+
+    msg = random.randint(1, n)
+    print(f'[+] msg: {msg}')
+
+    e_msg = encrypt(msg, e, n)
+    print(f'[+] Encrypted msg: {e_msg}')
+
+    d_msg = decrypt(e_msg, d, n)
+    print(f'[+] Decrypted msg: {d_msg}')
